@@ -75,18 +75,18 @@ If you prefer manual installation:
 1. **Project-specific agents** (recommended):
 ```bash
 # Clone this repository
-git clone https://github.com/iowarp/iowarp_agents.git
+git clone https://github.com/iowarp/iowarp-agents.git
 
 # Copy agents to your project
 mkdir -p .claude/agents
-cp iowarp_agents/agents/*.md .claude/agents/
+cp iowarp-agents/agents/*.md .claude/agents/
 ```
 
 2. **Global agents** (for all projects):
 ```bash
 # Copy to user-level directory
 mkdir -p ~/.claude/agents
-cp iowarp_agents/agents/*.md ~/.claude/agents/
+cp iowarp-agents/agents/*.md ~/.claude/agents/
 ```
 
 ### Usage in Claude Code
@@ -184,7 +184,7 @@ While currently optimized for Claude Code, these agents are designed with portab
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/iowarp/iowarp_agents/issues)
+- **Issues**: [GitHub Issues](https://github.com/iowarp/iowarp-agents/issues)
 - **Discussions**: [IOWarp Community](https://grc.zulipchat.com/#narrow/channel/518574-iowarp-mcps)
 
 ## License

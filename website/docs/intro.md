@@ -16,13 +16,13 @@ IOWarp Agents are task-specific AI assistants designed to enhance your scientifi
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/iowarp/iowarp_agents.git
+git clone https://github.com/iowarp/iowarp-agents.git
 ```
 
 2. **Copy agents to your project:**
 ```bash
 mkdir -p .claude/agents
-cp iowarp_agents/agents/*.md .claude/agents/
+cp iowarp-agents/agents/*.md .claude/agents/
 ```
 
 ### Global Installation
@@ -32,7 +32,7 @@ For use across all your projects:
 ```bash
 # Copy to user-level directory
 mkdir -p ~/.claude/agents
-cp iowarp_agents/agents/*.md ~/.claude/agents/
+cp iowarp-agents/agents/*.md ~/.claude/agents/
 ```
 
 ## Usage in Claude Code
@@ -98,4 +98,4 @@ Here's a typical scientific computing workflow using IOWarp Agents:
 
 ---
 
-Need help? Check out our [GitHub Issues](https://github.com/iowarp/iowarp_agents/issues) or join the [community discussion](https://grc.zulipchat.com/#narrow/channel/518574-iowarp-mcps).
+Need help? Check out our [GitHub Issues](https://github.com/iowarp/iowarp-agents/issues) or join the [community discussion](https://grc.zulipchat.com/#narrow/channel/518574-iowarp-mcps).

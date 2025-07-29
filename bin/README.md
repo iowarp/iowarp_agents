@@ -135,13 +135,13 @@ iowarp-agents install analysis-viz-expert claude local
 
 ## 🤝 Contributing
 
-We welcome contributions! See our [contribution guide](https://github.com/iowarp/iowarp_agents#contributing) for details.
+We welcome contributions! See our [contribution guide](https://github.com/iowarp/iowarp-agents#contributing) for details.
 
 ## 📚 Related Projects
 
 - [IOWarp MCPs](https://github.com/iowarp/iowarp-mcps) - MCP servers for scientific computing
-- [IOWarp Agents](https://github.com/iowarp/iowarp_agents) - Specialized AI subagents
-- [IOWarp Website](https://iowarp.github.io/iowarp_agents/) - Browse agents online
+- [IOWarp Agents](https://github.com/iowarp/iowarp-agents) - Specialized AI subagents
+- [IOWarp Website](https://iowarp.github.io/iowarp-agents/) - Browse agents online
 
 ## 📄 License
 

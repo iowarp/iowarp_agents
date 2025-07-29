@@ -24,8 +24,8 @@ import requests
 console = Console()
 
 # Agent metadata
-AGENTS_REPO_URL = "https://api.github.com/repos/iowarp/iowarp_agents/contents/agents"
-AGENTS_RAW_URL = "https://raw.githubusercontent.com/iowarp/iowarp_agents/main/agents"
+AGENTS_REPO_URL = "https://api.github.com/repos/iowarp/iowarp-agents/contents/agents"
+AGENTS_RAW_URL = "https://raw.githubusercontent.com/iowarp/iowarp-agents/main/agents"
 
 # Supported platforms and their paths
 PLATFORMS = {

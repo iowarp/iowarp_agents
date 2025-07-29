@@ -23,12 +23,12 @@ const config = {
   url: 'https://iowarp.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/iowarp_agents/',
+  baseUrl: '/iowarp-agents/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'iowarp', // Usually your GitHub org/user name.
-  projectName: 'iowarp_agents', // Usually your repo name.
+  projectName: 'iowarp-agents', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -48,7 +48,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          editUrl: 'https://github.com/iowarp/iowarp_agents/tree/main/',
+          editUrl: 'https://github.com/iowarp/iowarp-agents/tree/main/',
         },
         blog: false, // Disable blog
         theme: {
@@ -82,7 +82,7 @@ const config = {
             label: '📚 Docs',
           },
           {
-            href: 'https://github.com/iowarp/iowarp_agents',
+            href: 'https://github.com/iowarp/iowarp-agents',
             label: 'GitHub',
             position: 'right',
           },
@@ -109,7 +109,7 @@ const config = {
             items: [
               {
                 label: 'GitHub Issues',
-                href: 'https://github.com/iowarp/iowarp_agents/issues',
+                href: 'https://github.com/iowarp/iowarp-agents/issues',
               },
               {
                 label: 'IOWarp MCPs',
@@ -126,7 +126,7 @@ const config = {
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/iowarp/iowarp_agents',
+                href: 'https://github.com/iowarp/iowarp-agents',
               },
             ],
           },

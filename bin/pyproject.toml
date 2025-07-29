@@ -39,10 +39,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/iowarp/iowarp_agents"
-Repository = "https://github.com/iowarp/iowarp_agents"
-Issues = "https://github.com/iowarp/iowarp_agents/issues"
-Documentation = "https://iowarp.github.io/iowarp_agents/"
+Homepage = "https://github.com/iowarp/iowarp-agents"
+Repository = "https://github.com/iowarp/iowarp-agents"
+Issues = "https://github.com/iowarp/iowarp-agents/issues"
+Documentation = "https://iowarp.github.io/iowarp-agents/"
 
 [project.scripts]
 iowarp-agents = "iowarp_agents.cli:main"
