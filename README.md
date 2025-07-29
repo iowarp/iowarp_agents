@@ -21,7 +21,56 @@ IOWarp Agents are task-specific AI assistants that enhance your scientific compu
 
 ## Quick Start
 
-### Installation
+### 🚀 Easy Installation (Recommended)
+
+Use our beautiful CLI tool for the best experience:
+
+```bash
+# Install and use with uvx (recommended)
+uvx iowarp-agents install
+
+# Or install the CLI globally
+pip install iowarp-agents
+iowarp-agents install
+```
+
+**Interactive Installation Example:**
+```bash
+$ uvx iowarp-agents install
+
+🤖 IOWarp Agents CLI
+
+Select an agent to install:
+
+1) 💾 Data Io Expert       Scientific data formats and I/O operations
+2) 📊 Analysis Viz Expert  Data analysis and visualization  
+3) 🚀 Hpc Performance Expert  HPC and performance optimization
+4) 📚 Research Doc Expert  Research literature and documentation
+5) ⚙️ Workflow Orchestrator  Workflow and environment management
+
+Enter your choice [1]: 2
+
+Select target platform:
+1) Claude Code  Claude Code AI assistant with subagent support
+
+Select installation scope:
+1) Local project      Install in current project only
+2) Global installation Install for all projects
+
+✅ Installation Successful!
+```
+
+### 📋 CLI Commands
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `list` | List all available agents | `uvx iowarp-agents list --detailed` |
+| `install` | Install an agent interactively | `uvx iowarp-agents install` |
+| `install <agent> <platform> <scope>` | Direct installation | `uvx iowarp-agents install workflow-orchestrator claude local` |
+
+### 📦 Manual Installation
+
+If you prefer manual installation:
 
 1. **Project-specific agents** (recommended):
 ```bash

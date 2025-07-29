@@ -257,9 +257,7 @@
   border-top: 1px solid #e1e5e9;
   padding-top: 1rem;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 1rem;
 }
 
@@ -285,18 +283,43 @@
   font-style: italic;
 }
 
-.viewAgentButton {
-  background: #667eea;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
+.agentActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.viewAgentButton:hover {
+.installCommand {
+  flex: 1;
+  background: #1a202c;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #2d3748;
+}
+
+.installCommand code {
+  color: #e2e8f0;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.8rem;
+  background: none;
+  padding: 0;
+}
+
+.viewSourceLink {
+  background: #667eea;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.viewSourceLink:hover {
   background: #5a67d8;
   text-decoration: none;
   color: white;
@@ -612,4 +635,17 @@
 [data-theme='dark'] .modalToolTag {
   background: var(--ifm-color-emphasis-200);
   color: var(--ifm-color-emphasis-800);
+}
+
+[data-theme='dark'] .installCommand {
+  background: var(--ifm-color-emphasis-100);
+  border-color: var(--ifm-color-emphasis-300);
+}
+
+[data-theme='dark'] .installCommand code {
+  color: var(--ifm-color-emphasis-900);
+}
+
+[data-theme='dark'] .agentActions {
+  border-top-color: var(--ifm-color-emphasis-200);
 }

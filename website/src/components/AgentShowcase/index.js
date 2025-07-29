@@ -155,11 +155,14 @@ const AgentCard = ({ agentId, agent, onShowModal }) => {
           onShowMore={(type, content) => onShowModal(type, content, `${agent.displayName} - Available Tools`)}
         />
         <div className={styles.agentActions}>
+          <div className={styles.installCommand}>
+            <code>uvx iowarp-agents install {agent.name}</code>
+          </div>
           <a
             href={`https://github.com/iowarp/iowarp_agents/blob/main/agents/${agent.filename}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={styles.viewAgentButton}
+            className={styles.viewSourceLink}
           >
             View Source →
           </a>
@@ -313,24 +316,43 @@ const AgentShowcase = () => {
         <h2>Quick Start</h2>
         <div className={styles.quickStartGrid}>
           <div className={styles.quickStartCard}>
-            <h3>📋 Project Setup</h3>
+            <h3>🚀 Easy Installation (Recommended)</h3>
             <pre className={styles.codeBlock}>
-{`# Clone the repository
-git clone https://github.com/iowarp/iowarp_agents.git
+{`# Install and use with uvx (recommended)
+uvx iowarp-agents install
 
-# Copy agents to your project
-mkdir -p .claude/agents
-cp iowarp_agents/agents/*.md .claude/agents/`}
+# Or install the CLI globally  
+pip install iowarp-agents
+iowarp-agents install`}
             </pre>
           </div>
           <div className={styles.quickStartCard}>
-            <h3>🚀 Usage</h3>
+            <h3>💻 Direct Commands</h3>
             <pre className={styles.codeBlock}>
-{`# In Claude Code, use:
+{`# List all available agents
+uvx iowarp-agents list
+
+# Install specific agent for Claude Code locally
+uvx iowarp-agents install workflow-orchestrator claude local`}
+            </pre>
+          </div>
+          <div className={styles.quickStartCard}>
+            <h3>🎯 Usage in Claude Code</h3>
+            <pre className={styles.codeBlock}>
+{`# Use the /agents command
 /agents
 
 # Or natural language:
 "Use the data-io-expert to help me convert this HDF5 file"`}
+            </pre>
+          </div>
+          <div className={styles.quickStartCard}>
+            <h3>📦 Manual Installation</h3>
+            <pre className={styles.codeBlock}>
+{`# For manual setup
+git clone https://github.com/iowarp/iowarp_agents.git
+mkdir -p .claude/agents
+cp iowarp_agents/agents/*.md .claude/agents/`}
             </pre>
           </div>
         </div>
