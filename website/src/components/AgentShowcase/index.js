@@ -261,7 +261,6 @@ const AgentShowcase = () => {
           </h1>
           <p className={styles.subtitle}>
             Specialized AI subagents for scientific computing workflows.
-            Built for Claude Code, designed to be adaptable as other systems develop similar capabilities.
           </p>
         </div>
       </div>
@@ -313,26 +312,18 @@ const AgentShowcase = () => {
 
       {/* Quick Start Section */}
       <div className={styles.quickStart}>
-        <h2>Quick Start</h2>
+        <h2 className={styles.quickStartTitle}>Quick Start</h2>
         <div className={styles.quickStartGrid}>
           <div className={styles.quickStartCard}>
-            <h3>🚀 Easy Installation (Recommended)</h3>
+            <h3>🚀 Install with uvx</h3>
             <pre className={styles.codeBlock}>
 {`# Install and use with uvx (recommended)
 uvx iowarp-agents install
 
-# Or install the CLI globally  
-pip install iowarp-agents
-iowarp-agents install`}
-            </pre>
-          </div>
-          <div className={styles.quickStartCard}>
-            <h3>💻 Direct Commands</h3>
-            <pre className={styles.codeBlock}>
-{`# List all available agents
+# List all available agents
 uvx iowarp-agents list
 
-# Install specific agent for Claude Code locally
+# Install specific agent
 uvx iowarp-agents install workflow-orchestrator claude local`}
             </pre>
           </div>
@@ -344,15 +335,6 @@ uvx iowarp-agents install workflow-orchestrator claude local`}
 
 # Or natural language:
 "Use the data-io-expert to help me convert this HDF5 file"`}
-            </pre>
-          </div>
-          <div className={styles.quickStartCard}>
-            <h3>📦 Manual Installation</h3>
-            <pre className={styles.codeBlock}>
-{`# For manual setup
-git clone https://github.com/iowarp/iowarp_agents.git
-mkdir -p .claude/agents
-cp iowarp_agents/agents/*.md .claude/agents/`}
             </pre>
           </div>
         </div>

@@ -471,6 +471,15 @@
   border-color: var(--ifm-color-emphasis-200);
 }
 
+[data-theme='dark'] .quickStart h2,
+[data-theme='dark'] .quickStartTitle {
+  color: var(--ifm-font-color-base);
+}
+
+[data-theme='dark'] .quickStartCard h3 {
+  color: var(--ifm-font-color-base);
+}
+
 [data-theme='dark'] .expertiseList li {
   color: var(--ifm-color-emphasis-800);
 }

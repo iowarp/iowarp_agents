@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Specialized AI subagents for scientific computing workflows. Built for Claude Code, designed to be adaptable as other systems develop similar capabilities.">
+      description="Specialized AI subagents for scientific computing workflows.">
       <main>
         <AgentShowcase />
       </main>
