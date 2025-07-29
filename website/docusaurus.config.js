@@ -67,12 +67,16 @@ const config = {
         {name: 'keywords', content: 'AI agents, subagents, scientific computing, Claude Code, IOWarp, data analysis, HPC, research'},
         {property: 'og:title', content: 'IOWarp Agents - AI Subagents for Scientific Computing'},
         {property: 'og:description', content: 'Specialized AI subagents for scientific computing workflows.'},
+        {property: 'og:image', content: 'https://iowarp.github.io/iowarp-agents/img/iowarp_social_card.png'},
+        {property: 'og:image:width', content: '400'},
+        {property: 'og:image:height', content: '400'},
         {name: 'twitter:card', content: 'summary_large_image'},
         {name: 'twitter:title', content: 'IOWarp Agents - AI Subagents for Scientific Computing'},
         {name: 'twitter:description', content: 'Specialized AI subagents for scientific computing workflows.'},
+        {name: 'twitter:image', content: 'https://iowarp.github.io/iowarp-agents/img/iowarp_social_card.png'},
       ],
       // Social card for link previews
-      image: 'img/iowarp_logo.png',
+      image: 'img/iowarp_social_card.png',
       navbar: {
         title: 'IOWarp Agents',
         logo: {
