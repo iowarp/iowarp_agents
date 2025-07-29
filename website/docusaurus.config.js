@@ -11,8 +11,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'IOWarp Agents',
-  tagline: 'Specialized AI Subagents for Scientific Computing',
-  favicon: 'img/favicon.ico',
+  tagline: 'Specialized AI subagents for scientific computing workflows',
+  favicon: 'img/iowarp_logo.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -61,25 +61,35 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      // Enhanced metadata for social sharing
+      metadata: [
+        {name: 'description', content: 'Specialized AI subagents for scientific computing workflows. Enable Claude Code and other AI assistants to tackle complex scientific tasks.'},
+        {name: 'keywords', content: 'AI agents, subagents, scientific computing, Claude Code, IOWarp, data analysis, HPC, research'},
+        {property: 'og:title', content: 'IOWarp Agents - AI Subagents for Scientific Computing'},
+        {property: 'og:description', content: 'Specialized AI subagents for scientific computing workflows.'},
+        {name: 'twitter:card', content: 'summary_large_image'},
+        {name: 'twitter:title', content: 'IOWarp Agents - AI Subagents for Scientific Computing'},
+        {name: 'twitter:description', content: 'Specialized AI subagents for scientific computing workflows.'},
+      ],
+      // Social card for link previews
+      image: 'img/iowarp_logo.png',
       navbar: {
         title: 'IOWarp Agents',
         logo: {
           alt: 'IOWarp Agents Logo',
-          src: 'img/logo.svg',
+          src: 'img/iowarp_logo.png',
         },
         items: [
           {
             to: '/',
             position: 'left',
-            label: '🤖 Browse Agents',
+            label: 'Browse Agents',
           },
           {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: '📚 Docs',
+            label: 'Docs',
           },
           {
             href: 'https://github.com/iowarp/iowarp-agents',
