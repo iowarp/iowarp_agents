@@ -34,6 +34,12 @@ PLATFORMS = {
         "local_path": ".claude/agents",
         "global_path": "~/.claude/agents",
         "description": "Claude Code AI assistant with subagent support"
+    },
+    "opencode": {
+        "name": "OpenCode",
+        "local_path": ".opencode/agent",
+        "global_path": "~/.config/opencode/agent",
+        "description": "OpenCode AI development environment with MCP support"
     }
 }
 
@@ -45,7 +51,7 @@ class AgentManager:
         self._agents_cache = None
     
     def fetch_available_agents(self) -> Dict[str, Dict]:
-        """Fetch available agents from GitHub repository"""
+        """Fetch available agents from GitHub repository and local warpio-agents"""
         if self._agents_cache:
             return self._agents_cache
             
@@ -62,7 +68,11 @@ class AgentManager:
                 
                 agents = {}
                 for item in response.json():
-                    if item['name'].endswith('.md'):
+                    if item['name'].endswith('.md') and item['name'] != 'README.md':
+                        # Skip warpio-agents directory - we'll load these locally
+                        if item['name'] == 'warpio-agents':
+                            continue
+                            
                         agent_name = item['name'][:-3]  # Remove .md extension
                         
                         # Fetch agent content to parse metadata
@@ -73,8 +83,16 @@ class AgentManager:
                         agents[agent_name] = {
                             'filename': item['name'],
                             'download_url': agent_response.url,
+                            'source': 'github',
+                            'platform_compatibility': ['claude'],  # Standard agents are Claude compatible
                             **metadata
                         }
+                
+                progress.update(task, description="Loading local warpio agents...")
+                
+                # Add local warpio-agents
+                warpio_agents = self._load_local_warpio_agents()
+                agents.update(warpio_agents)
                 
                 progress.update(task, completed=True)
                 self._agents_cache = agents
@@ -82,7 +100,9 @@ class AgentManager:
                 
         except requests.RequestException as e:
             self.console.print(f"[red]Error fetching agents: {e}[/red]")
-            return {}
+            # Still try to load local warpio agents even if GitHub fails
+            warpio_agents = self._load_local_warpio_agents()
+            return warpio_agents
         except Exception as e:
             self.console.print(f"[red]Unexpected error: {e}[/red]")
             return {}
@@ -124,6 +144,61 @@ class AgentManager:
                     break
         
         return metadata
+    
+    def _load_local_warpio_agents(self) -> Dict[str, Dict]:
+        """Load warpio-agents from local directory structure and group by base name"""
+        warpio_agents = {}
+        agent_platforms = {}  # Track platforms for each agent
+        
+        # Get the script's directory and navigate to warpio-agents
+        script_dir = Path(__file__).parent.parent.parent  # bin/iowarp_agents -> bin -> root
+        warpio_dir = script_dir / "agents" / "warpio-agents"
+        
+        if not warpio_dir.exists():
+            return warpio_agents
+        
+        # First pass: collect agents and their platforms
+        for platform_folder in ['claude', 'opencode']:
+            platform_dir = warpio_dir / platform_folder
+            if not platform_dir.exists():
+                continue
+                
+            for agent_file in platform_dir.glob("*.md"):
+                agent_name = agent_file.stem
+                
+                try:
+                    content = agent_file.read_text(encoding='utf-8')
+                    metadata = self._parse_agent_metadata(content)
+                    
+                    # Group by base agent name (without platform suffix)
+                    base_name = f"warpio-{agent_name}"
+                    
+                    if base_name not in agent_platforms:
+                        agent_platforms[base_name] = {
+                            'platforms': [],
+                            'files': {},
+                            'metadata': metadata
+                        }
+                    
+                    agent_platforms[base_name]['platforms'].append(platform_folder)
+                    agent_platforms[base_name]['files'][platform_folder] = str(agent_file)
+                    
+                except Exception as e:
+                    self.console.print(f"[yellow]Warning: Could not load {agent_file.name}: {e}[/yellow]")
+        
+        # Second pass: create grouped agents with all platforms
+        for base_name, info in agent_platforms.items():
+            warpio_agents[base_name] = {
+                'filename': f"{base_name}.md",  # Generic filename
+                'local_path': info['files'],  # Dict of platform -> path
+                'source': 'local',
+                'platform_compatibility': info['platforms'],
+                'agent_type': 'warpio',
+                'platforms_available': info['platforms'],
+                **info['metadata']
+            }
+        
+        return warpio_agents
 
 def get_agent_display_name(agent_name: str) -> str:
     """Convert agent name to display name"""
@@ -148,6 +223,46 @@ def get_category_icon(agent_name: str) -> str:
             return icon
     
     return '🤖'  # Default icon
+
+def _show_detailed_agent(agent_name: str, agent_data: Dict):
+    """Show detailed agent information"""
+    icon = get_category_icon(agent_name)
+    display_name = get_agent_display_name(agent_name)
+    
+    panel_content = f"[bold]{icon} {display_name}[/bold]\n\n"
+    panel_content += f"[dim]ID:[/dim] {agent_name}\n"
+    
+    if 'description' in agent_data:
+        description = agent_data['description']
+        if len(description) > 120:
+            description = description[:120] + "..."
+        panel_content += f"[dim]Description:[/dim] {description}\n"
+    
+    # Show platform compatibility
+    platforms = agent_data.get('platform_compatibility', ['claude'])
+    panel_content += f"[dim]Platforms:[/dim] {', '.join(platforms)}\n"
+    
+    # Show warpio-specific info
+    if agent_data.get('agent_type') == 'warpio':
+        warpio_platform = agent_data.get('warpio_platform', '')
+        if 'mode' in agent_data:
+            panel_content += f"[dim]Mode:[/dim] {agent_data['mode']}\n"
+        panel_content += f"[dim]Optimized for:[/dim] {warpio_platform}\n"
+    
+    # Show tools information
+    if 'tools' in agent_data:
+        tools = agent_data['tools']
+        if isinstance(tools, list):
+            tools_str = ', '.join(tools[:3])
+            if len(tools) > 3:
+                tools_str += f" (+{len(tools) - 3} more)"
+            panel_content += f"[dim]Tools:[/dim] {tools_str}\n"
+        elif isinstance(tools, str) and tools:
+            panel_content += f"[dim]Tools:[/dim] {tools}\n"
+    
+    # Different border colors for different types
+    border_style = "magenta" if agent_data.get('agent_type') == 'warpio' else "blue"
+    console.print(Panel(panel_content.strip(), border_style=border_style, padding=(1, 2)))
 
 @click.group(invoke_without_command=True)
 @click.pass_context
@@ -187,7 +302,8 @@ def cli(ctx):
 
 @cli.command()
 @click.option('--detailed', '-d', is_flag=True, help='Show detailed information about each agent')
-def list(detailed):
+@click.option('--platform', '-p', help='Filter agents by platform compatibility (claude, opencode)')
+def list(detailed, platform):
     """📋 List all available agents"""
     
     manager = AgentManager()
@@ -197,34 +313,55 @@ def list(detailed):
         console.print("[red]No agents found or unable to fetch agent list.[/red]")
         return
     
+    # Filter by platform if specified
+    if platform:
+        filtered_agents = {
+            name: data for name, data in agents.items()
+            if platform in data.get('platform_compatibility', [])
+        }
+        if not filtered_agents:
+            console.print(f"[yellow]No agents found for platform '{platform}'[/yellow]")
+            console.print(f"[dim]Available platforms: {', '.join(PLATFORMS.keys())}[/dim]")
+            return
+        agents = filtered_agents
+    
     console.print()
-    console.print(Panel.fit(
-        f"[bold green]Available IOWarp Agents[/bold green] [dim]({len(agents)} total)[/dim]",
-        border_style="green"
-    ))
+    header_text = f"[bold green]Available IOWarp Agents[/bold green] [dim]({len(agents)} total"
+    if platform:
+        header_text += f", {platform} compatible"
+    header_text += ")[/dim]"
+    
+    console.print(Panel.fit(header_text, border_style="green"))
     console.print()
     
     if detailed:
-        # Detailed view with full descriptions
+        # Categorize agents for detailed view
+        standard_agents = {}
+        warpio_agents = {}
+        
         for agent_name, agent_data in sorted(agents.items()):
-            icon = get_category_icon(agent_name)
-            display_name = get_agent_display_name(agent_name)
-            
-            panel_content = f"[bold]{icon} {display_name}[/bold]\n\n"
-            panel_content += f"[dim]ID:[/dim] {agent_name}\n"
-            
-            if 'description' in agent_data:
-                panel_content += f"[dim]Description:[/dim] {agent_data['description']}\n"
-            
-            if 'tools' in agent_data:
-                tools = agent_data['tools']
-                if isinstance(tools, list):
-                    panel_content += f"[dim]Tools:[/dim] {', '.join(tools[:3])}"
-                    if len(tools) > 3:
-                        panel_content += f" (+{len(tools) - 3} more)"
-                    panel_content += "\n"
-            
-            console.print(Panel(panel_content.strip(), border_style="blue", padding=(1, 2)))
+            if agent_data.get('agent_type') == 'warpio':
+                warpio_agents[agent_name] = agent_data
+            else:
+                standard_agents[agent_name] = agent_data
+        
+        # Show standard agents first
+        if standard_agents:
+            console.print("[bold blue]Standard IOWarp Agents[/bold blue]")
+            console.print()
+            for agent_name, agent_data in standard_agents.items():
+                _show_detailed_agent(agent_name, agent_data)
+                console.print()
+        
+        # Show warpio agents
+        if warpio_agents:
+            if standard_agents:
+                console.print()
+            console.print("[bold magenta]Warpio Agents (Deployment Orchestration)[/bold magenta]")
+            console.print()
+            for agent_name, agent_data in warpio_agents.items():
+                _show_detailed_agent(agent_name, agent_data)
+                console.print()
             
     else:
         # Compact grid view
@@ -233,15 +370,26 @@ def list(detailed):
             icon = get_category_icon(agent_name)
             display_name = get_agent_display_name(agent_name)
             
-            # Create a compact card
-            card = f"[bold]{icon} {display_name}[/bold]\n[dim]{agent_name}[/dim]"
+            # Special handling for warpio agents - show platforms in brackets
+            if agent_data.get('agent_type') == 'warpio':
+                platforms = agent_data.get('platform_compatibility', [])
+                platform_text = f"({', '.join(platforms)})" if platforms else ""
+                display_name = display_name.replace('Warpio ', '')  # Remove 'Warpio' prefix
+                card = f"[bold]{icon} {display_name}[/bold]\n[dim]{agent_name}[/dim]\n[dim]{platform_text}[/dim]"
+            else:
+                # Standard agents - show platform compatibility normally  
+                platforms = agent_data.get('platform_compatibility', ['claude'])
+                platform_text = f"[dim]{'/'.join(platforms)}[/dim]"
+                card = f"[bold]{icon} {display_name}[/bold]\n[dim]{agent_name}[/dim]\n{platform_text}"
+            
             items.append(Panel(card, border_style="blue", padding=(0, 1)))
         
         # Display in columns
         console.print(Columns(items, equal=True, expand=True))
     
     console.print()
-    console.print("[dim]Use 'iowarp-agents install <agent-name>' to install an agent[/dim]")
+    console.print("[dim]Use 'iowarp-agents install <agent-name> <platform>' to install an agent[/dim]")
+    console.print(f"[dim]Supported platforms: {', '.join(PLATFORMS.keys())}[/dim]")
     console.print()
 
 @cli.command()
@@ -269,6 +417,15 @@ def install(agent_name, platform, scope):
         console.print(f"[red]Agent '{agent_name}' not found.[/red]")
         console.print("[dim]Use 'iowarp-agents list' to see available agents.[/dim]")
         return
+    
+    agent_data = agents[agent_name]
+    
+    # Check platform compatibility before interactive selection
+    compatible_platforms = agent_data.get('platform_compatibility', ['claude'])
+    if platform and platform not in compatible_platforms:
+        console.print(f"[yellow]Warning: Agent '{agent_name}' is optimized for {', '.join(compatible_platforms)} but you selected {platform}[/yellow]")
+        if not Confirm.ask("Continue anyway?", default=False):
+            return
     
     # Interactive platform selection if not provided
     if not platform:
@@ -393,8 +550,8 @@ def _select_scope() -> Optional[str]:
     table.add_column("Scope", style="bold")
     table.add_column("Description", style="dim")
     
-    table.add_row("1)", "Local project", "Install in current project only (./.claude/agents)")
-    table.add_row("2)", "Global installation", "Install for all projects (~/.claude/agents)")
+    table.add_row("1)", "Local project", "Install in current project (./.claude/agents or ./.opencode/agent)")
+    table.add_row("2)", "Global installation", "Install for all projects (~/.claude/agents or ~/.config/opencode/agent)")
     
     console.print(table)
     console.print()
@@ -425,6 +582,20 @@ def _install_agent(agent_name: str, agent_data: Dict, platform: str, scope: str)
     """Install the specified agent"""
     platform_info = PLATFORMS[platform]
     
+    # Check platform compatibility
+    compatible_platforms = agent_data.get('platform_compatibility', ['claude'])
+    if platform not in compatible_platforms:
+        console.print()
+        console.print(Panel.fit(
+            f"[bold yellow]⚠️  Platform Compatibility Warning[/bold yellow]\n\n"
+            f"Agent '{agent_name}' is optimized for: {', '.join(compatible_platforms)}\n"
+            f"You're installing for: {platform}\n\n"
+            f"The agent may not work optimally on this platform.",
+            border_style="yellow"
+        ))
+        if not Confirm.ask("Continue with installation?", default=False):
+            return
+    
     # Determine target directory
     if scope == "local":
         target_dir = Path(platform_info['local_path'])
@@ -434,13 +605,24 @@ def _install_agent(agent_name: str, agent_data: Dict, platform: str, scope: str)
     # Create target directory if it doesn't exist
     target_dir.mkdir(parents=True, exist_ok=True)
     
-    # Target file path
-    target_file = target_dir / agent_data['filename']
+    # Determine target filename - for warpio agents, use simplified names
+    if agent_data.get('agent_type') == 'warpio':
+        # Remove platform suffix from display name for cleaner filenames
+        base_name = agent_name.replace('warpio-', '').replace('-claude', '').replace('-opencode', '')
+        if platform == 'opencode':
+            target_filename = f"warpio-{base_name}.md"
+        else:
+            target_filename = f"{base_name}.md"
+    else:
+        target_filename = agent_data['filename']
+    
+    target_file = target_dir / target_filename
     
     console.print()
     console.print(Panel.fit(
         f"[bold blue]Installing Agent[/bold blue]\n\n"
         f"[dim]Agent:[/dim] {get_agent_display_name(agent_name)}\n"
+        f"[dim]Type:[/dim] {agent_data.get('agent_type', 'standard')}\n"
         f"[dim]Platform:[/dim] {platform_info['name']}\n"
         f"[dim]Scope:[/dim] {scope}\n"
         f"[dim]Target:[/dim] {target_file}",
@@ -453,17 +635,37 @@ def _install_agent(agent_name: str, agent_data: Dict, platform: str, scope: str)
             TextColumn("[progress.description]{task.description}"),
             console=console,
         ) as progress:
-            task = progress.add_task("Downloading agent...", total=None)
-            
-            # Download agent content
-            response = requests.get(agent_data['download_url'], timeout=30)
-            response.raise_for_status()
-            
-            progress.update(task, description="Writing agent file...")
-            
-            # Write to target file
-            with open(target_file, 'w', encoding='utf-8') as f:
-                f.write(response.text)
+            if agent_data.get('source') == 'local':
+                # Copy from local warpio-agents file
+                task = progress.add_task("Copying local agent...", total=None)
+                
+                progress.update(task, description="Reading local agent file...")
+                
+                # Handle grouped warpio agents with platform-specific files
+                if agent_data.get('agent_type') == 'warpio' and isinstance(agent_data.get('local_path'), dict):
+                    platform_files = agent_data['local_path']
+                    if platform not in platform_files:
+                        raise FileNotFoundError(f"No {platform} version found for {agent_name}")
+                    source_file = platform_files[platform]
+                else:
+                    source_file = agent_data['local_path']
+                
+                with open(source_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                progress.update(task, description="Writing agent file...")
+                with open(target_file, 'w', encoding='utf-8') as f:
+                    f.write(content)
+            else:
+                # Download from GitHub
+                task = progress.add_task("Downloading agent...", total=None)
+                
+                response = requests.get(agent_data['download_url'], timeout=30)
+                response.raise_for_status()
+                
+                progress.update(task, description="Writing agent file...")
+                with open(target_file, 'w', encoding='utf-8') as f:
+                    f.write(response.text)
             
             progress.update(task, completed=True)
         
@@ -481,7 +683,16 @@ def _install_agent(agent_name: str, agent_data: Dict, platform: str, scope: str)
         console.print("[bold cyan]Usage Instructions:[/bold cyan]")
         if platform == "claude":
             console.print("• Use [bold]/agents[/bold] command in Claude Code")
-            console.print(f"• Or mention: [dim]\"Use the {agent_name} to help me...\"[/dim]")
+            console.print(f"• Or mention: [dim]\"Use the {agent_name.replace('warpio-', '').replace('-claude', '')} to help me...\"[/dim]")
+        elif platform == "opencode":
+            if agent_data.get('mode') == 'primary':
+                console.print("• Use [bold]Tab key[/bold] to cycle through primary agents")
+                console.print(f"• Or mention: [dim]\"Switch to {agent_name.replace('warpio-', '').replace('-opencode', '')} for...\"[/dim]")
+            else:
+                base_name = agent_name.replace('warpio-', '').replace('-opencode', '')
+                console.print(f"• Invoke with: [bold]@{base_name}[/bold]")
+                console.print(f"• Or mention: [dim]\"@{base_name} help me with...\"[/dim]")
+            console.print("• Navigate sessions: [dim]Ctrl+Right/Left[/dim]")
         
         console.print()
         
